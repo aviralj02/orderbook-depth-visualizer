@@ -1,3 +1,9 @@
+import { OrderbookVisualizer } from "@/components/OrderBookVisualizer";
+
 export default function Home() {
-  return <div>Orderbok Depth Visualizer Assignment</div>;
+  return (
+    <main className="w-full h-screen bg-gray-900 overflow-hidden">
+      <OrderbookVisualizer />
+    </main>
+  );
 }
