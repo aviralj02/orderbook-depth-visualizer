@@ -1,27 +1,36 @@
 "use client";
 
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import LoadingSpinner from "./LoadingSpinner";
 import { useOrderbookStore } from "@/store/orderbookStore";
 import { ControlPanel } from "./ControlPanel";
+import { PressureAnalysis } from "./PressureAnalysis";
+import { Button } from "./ui/button";
+import { CircleGauge, SlidersHorizontal } from "lucide-react";
+import { PanelOptions } from "@/types/orderbook";
 
 const OrderbookScene = lazy(() => import("./OrderbookScene"));
 
 export function OrderbookVisualizer() {
   const { isConnected, error } = useOrderbookStore();
 
+  const [showPanel, setShowPanel] = useState<PanelOptions>({
+    controlPanel: false,
+    pressurePanel: false,
+  });
+
   return (
     <div className="relative w-full h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       <div className="absolute top-0 left-0 right-0 z-20 p-4 backdrop-blur-sm bg-black/20">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="sm:text-xl font-bold text-white">
               3D Orderbook Visualizer
             </h1>
             <div
-              className={`px-3 py-1 rounded-full text-sm font-medium ${
+              className={`px-3 py-1 rounded-full text-xs font-medium ${
                 isConnected
                   ? "bg-green-500/20 text-green-400 border border-green-500/30"
                   : "bg-red-500/20 text-red-400 border border-red-500/30"
@@ -29,7 +38,34 @@ export function OrderbookVisualizer() {
             >
               {isConnected ? "Live" : "Disconnected"}
             </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() =>
+                  setShowPanel((prev) => ({
+                    controlPanel: !prev.controlPanel,
+                    pressurePanel: false,
+                  }))
+                }
+                className="cursor-pointer"
+              >
+                <SlidersHorizontal />
+              </Button>
+
+              <Button
+                onClick={() =>
+                  setShowPanel((prev) => ({
+                    controlPanel: false,
+                    pressurePanel: !prev.pressurePanel,
+                  }))
+                }
+                className="cursor-pointer"
+              >
+                <CircleGauge />
+              </Button>
+            </div>
           </div>
+
           {error && (
             <div className="px-3 py-1 rounded bg-red-500/20 text-red-400 text-sm">
               {error}
@@ -73,7 +109,8 @@ export function OrderbookVisualizer() {
         </Suspense>
       </Canvas>
 
-      <ControlPanel />
+      {showPanel.controlPanel && <ControlPanel />}
+      {showPanel.pressurePanel && <PressureAnalysis />}
 
       {!isConnected && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 backdrop-blur-sm">

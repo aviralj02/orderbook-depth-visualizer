@@ -27,3 +27,8 @@ export interface Settings {
   maxDepth: number;
   pressureThreshold: number;
 }
+
+export type PanelOptions = {
+  controlPanel: boolean;
+  pressurePanel: boolean;
+};
