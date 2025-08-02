@@ -42,7 +42,7 @@ export function OrderbookVisualizer() {
         gl={{ antialias: true, alpha: false }}
         dpr={[1, 2]}
       >
-        <PerspectiveCamera makeDefault position={[15, 10, 15]} />
+        <PerspectiveCamera makeDefault position={[15, 10, 25]} />
         <OrbitControls
           enablePan={true}
           enableZoom={true}
