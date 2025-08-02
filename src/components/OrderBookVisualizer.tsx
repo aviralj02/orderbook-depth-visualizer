@@ -5,6 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import LoadingSpinner from "./LoadingSpinner";
 import { useOrderbookStore } from "@/store/orderbookStore";
+import { ControlPanel } from "./ControlPanel";
 
 const OrderbookScene = lazy(() => import("./OrderbookScene"));
 
@@ -71,6 +72,8 @@ export function OrderbookVisualizer() {
           <OrderbookScene />
         </Suspense>
       </Canvas>
+
+      <ControlPanel />
 
       {!isConnected && (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/50 backdrop-blur-sm">

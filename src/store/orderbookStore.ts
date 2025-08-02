@@ -15,6 +15,7 @@ interface OrderbookStore {
 
   setOrderbook: (orderbook: Orderbook) => void;
   setSymbol: (symbol: string) => void;
+  setDepth: (depth: number) => void;
   setConnected: (connected: boolean) => void;
   setError: (error: string | null) => void;
   updateSettings: (newSettings: Partial<Settings>) => void;
@@ -26,10 +27,7 @@ interface OrderbookStore {
 
 const defaultSettings: Settings = {
   autoRotate: true,
-  isPaused: false,
   maxDepth: 20,
-  timeRange: 300,
-  visualizationMode: "realtime",
   pressureThreshold: 0.5,
 };
 
@@ -53,6 +51,15 @@ export const useOrderbookStore = create<OrderbookStore>((set, get) => ({
     setTimeout(() => get().connectWebSocket(), 1000);
   },
 
+  setDepth: (depth) => {
+    set((state) => ({
+      settings: { ...state.settings, maxDepth: depth },
+    }));
+
+    get().disconnectWebSocket();
+    setTimeout(() => get().connectWebSocket(), 1000);
+  },
+
   setConnected: (isConnected) => set({ isConnected }),
   setError: (error) => set({ error }),
 
@@ -68,8 +75,9 @@ export const useOrderbookStore = create<OrderbookStore>((set, get) => ({
     }),
 
   connectWebSocket: () => {
-    const { symbol } = get();
-    const wsUrl = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth20@100ms`;
+    const { symbol, settings } = get();
+    const { maxDepth } = settings;
+    const wsUrl = `wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth${maxDepth}@100ms`;
 
     try {
       const ws = new WebSocket(wsUrl);
@@ -170,12 +178,7 @@ export const useOrderbookStore = create<OrderbookStore>((set, get) => ({
         z: index * 0.5,
         intensity: Math.min(cluster.intensity, 1),
         radius: cluster.radius,
-        type:
-          cluster.intensity > 0.7
-            ? "high"
-            : cluster.intensity > 0.4
-            ? "medium"
-            : "low",
+        type: getPressureLevel(cluster.intensity),
       });
     });
 
