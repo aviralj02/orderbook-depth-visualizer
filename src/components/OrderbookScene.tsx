@@ -30,21 +30,25 @@ const OrderbookScene = () => {
       ...orderbook.asks.map((ask) => ask.quantity)
     );
 
-    const bids = orderbook.bids.slice(0, 20).map((bid, index) => ({
-      ...bid,
-      x: ((bid.price - minPrice) / priceRange) * 20 - 10,
-      y: (bid.quantity / maxQuantity) * 8,
-      z: -index * 0.3,
-      type: "bid" as const,
-    }));
+    const bids = orderbook.bids
+      .slice(0, settings.maxDepth)
+      .map((bid, index) => ({
+        ...bid,
+        x: ((bid.price - minPrice) / priceRange) * 20 - 10,
+        y: (bid.quantity / maxQuantity) * 8,
+        z: -index * 0.3,
+        type: "bid" as const,
+      }));
 
-    const asks = orderbook.asks.slice(0, 20).map((ask, index) => ({
-      ...ask,
-      x: ((ask.price - minPrice) / priceRange) * 20 - 10,
-      y: (ask.quantity / maxQuantity) * 8,
-      z: index * 0.3,
-      type: "ask" as const,
-    }));
+    const asks = orderbook.asks
+      .slice(0, settings.maxDepth)
+      .map((ask, index) => ({
+        ...ask,
+        x: ((ask.price - minPrice) / priceRange) * 20 - 10,
+        y: (ask.quantity / maxQuantity) * 8,
+        z: index * 0.3,
+        type: "ask" as const,
+      }));
 
     return { bids, asks, priceRange, minPrice, maxPrice, maxQuantity };
   }, [orderbook]);
@@ -135,17 +139,6 @@ const OrderbookScene = () => {
           radius={zone.radius}
         />
       ))}
-
-      {visualData.bids.length > 0 && visualData.asks.length > 0 && (
-        <mesh
-          position={[(visualData.asks[0].x + visualData.bids[0].x) / 2, 0.1, 0]}
-        >
-          <planeGeometry
-            args={[Math.abs(visualData.asks[0].x - visualData.bids[0].x), 0.2]}
-          />
-          <meshBasicMaterial color="#fbbf24" opacity={0.3} transparent />
-        </mesh>
-      )}
     </group>
   );
 };
