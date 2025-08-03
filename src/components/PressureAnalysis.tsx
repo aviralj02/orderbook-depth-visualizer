@@ -23,10 +23,10 @@ export function PressureAnalysis() {
   const imbalance = Math.abs(bidAskRatio - 1) * 100;
 
   const highPressureZones = pressureZones.filter(
-    (zone) => zone.intensity > 0.7
+    (zone) => zone.type === "high"
   );
   const mediumPressureZones = pressureZones.filter(
-    (zone) => zone.intensity > 0.4 && zone.intensity <= 0.7
+    (zone) => zone.type === "medium"
   );
 
   return (
